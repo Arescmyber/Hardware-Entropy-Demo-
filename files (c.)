@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <time.h>
+#include <stdint.h>
+#include <inttypes.h>
+
+int main() {
+    printf("=== DEMONSTRATION : MIXAGE D'ENTROPIE (EDUCATIF) ===\n");
+    printf("Avertissement : Non securise pour la cryptographie de production.\n\n");
+    
+    volatile int sensor_a = 0; 
+    volatile int sensor_b = 0;
+    
+    // Capture des sources d'entropie faibles
+    uint64_t spatial_noise = (uint64_t)(uintptr_t)&sensor_a + (uint64_t)(uintptr_t)&sensor_b;
+    uint64_t temporal_noise = (uint64_t)clock();
+    
+    // Brassage
+    uint64_t session_key = spatial_noise ^ temporal_noise;
+    
+    // Utilisation des standards POSIX pour une portabilite parfaite (32/64 bits)
+    printf("[+] Bruit Spatial (ASLR) : %" PRIu64 "\n", spatial_noise);
+    printf("[+] Bruit Temporel (CPU) : %" PRIu64 "\n", temporal_noise);
+    printf("🔑 CLE DE SESSION GENEREE : %" PRIx64 "\n", session_key);
+    
+    printf("\n[!] Rappel : Utiliser /dev/urandom pour la production.\n");
+    
+    return 0;
+}
